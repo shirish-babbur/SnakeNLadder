@@ -165,5 +165,4 @@ class Board {
       throw new PlayerNotFoundException(s"Player $playerName not Present.")
     }
   }
-
 }
