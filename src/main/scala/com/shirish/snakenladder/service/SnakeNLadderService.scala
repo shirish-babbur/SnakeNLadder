@@ -1,6 +1,6 @@
 package com.shirish.snakenladder.service
 
-import com.shirish.snakenladder.model.{Board, Dice, Ladder, NormalDice, Snake}
+import com.shirish.snakenladder.model.{Board, CrookedDice, Dice, Ladder, NormalDice, Snake}
 import com.shirish.snakenladder.utils.Constants._
 import com.shirish.snakenladder.utils.ExceptionUtils.InvalidBonusException
 
@@ -10,7 +10,7 @@ import com.shirish.snakenladder.utils.ExceptionUtils.InvalidBonusException
  */
 class SnakeNLadderService {
   private val board = new Board()
-  private val dice: Dice = new NormalDice
+  private var dice: Dice = _
 
   /**
    * Initializes board for playing
@@ -18,6 +18,10 @@ class SnakeNLadderService {
   def initialize(): Unit = {
     board.initialize()
     addPlayer(DEFAULT_PLAYER_NAME)
+  }
+
+  def setDice(isNormal: Boolean): Unit = {
+    if(isNormal) dice = new NormalDice else dice = new CrookedDice
   }
 
   /**
@@ -61,24 +65,14 @@ class SnakeNLadderService {
   }
 
   def choiceGame(): Boolean = {
+    selectDice()
     var exit = false
     while(!exit) {
       printChoiceUsage()
       try {
         val choice = scala.io.StdIn.readInt()
         choice match {
-          case 1 =>
-            println("Rolling a Dice...")
-            val rolledNumber = dice.roll()
-            println(s"Rolled Number - $rolledNumber")
-            board.goToCell(DEFAULT_PLAYER_NAME, rolledNumber)
-            val currentPosition = board.getPlayerPosition(DEFAULT_PLAYER_NAME)
-            if(currentPosition == DEFAULT_WIN_POSITION) {
-              println("Congratulations! You have Won the Game.")
-              exit = true
-            } else {
-              println(s"Moved your position to ${board.getPlayerPosition(DEFAULT_PLAYER_NAME)}")
-            }
+          case 1 => exit = rollAndForward(dice)
           case 2 => println(s"Your Current Position - ${board.getPlayerPosition(DEFAULT_PLAYER_NAME)}")
           case 3 =>
             println("Thank You for Playing SnakeNLadder. Exiting1")
@@ -90,6 +84,50 @@ class SnakeNLadderService {
       }
     }
     exit
+  }
+
+  /**
+   * Dice selection function
+   */
+  def selectDice(): Unit = {
+    var exit = false
+    while(!exit) {
+      printDiceUsage()
+      try {
+        val choice = scala.io.StdIn.readInt()
+        choice match {
+          case 1 =>
+            setDice(isNormal = true)
+            exit = true
+          case 2 =>
+            setDice(isNormal = false)
+            exit = true
+          case _ => println("Invalid choice")
+        }
+      } catch {
+        case x: Throwable => println("Please Enter Number only.")
+      }
+    }
+  }
+
+  /**
+   * Common function to do the rolling and move player position.
+   * @param dice: Dice
+   * @return Boolean
+   */
+  def rollAndForward(dice: Dice): Boolean = {
+    println("Rolling a Dice...")
+    val rolledNumber = dice.roll()
+    println(s"Rolled Number - $rolledNumber")
+    board.goToCell(DEFAULT_PLAYER_NAME, rolledNumber)
+    val currentPosition = board.getPlayerPosition(DEFAULT_PLAYER_NAME)
+    if(currentPosition == DEFAULT_WIN_POSITION) {
+      println("Congratulations! You have Won the Game.")
+      true
+    } else {
+      println(s"Moved your position to ${board.getPlayerPosition(DEFAULT_PLAYER_NAME)}")
+      false
+    }
   }
 
   /***
@@ -131,13 +169,25 @@ class SnakeNLadderService {
   }
 
   /**
+   * Dice Selection Message
+   */
+  def printDiceUsage(): Unit = {
+    println(
+      """
+        |Select Dice Type:
+        |1. Normal Dice
+        |2. Crooked Dice
+        |""".stripMargin)
+  }
+
+  /**
    * Service Usage information is printed here
    */
   def printChoiceUsage(): Unit = {
     println(
       """
         |You Have Following Choices to Choose From:
-        |1. Roll a Dice with Normal Dice
+        |1. Roll a Dice
         |2. Get Your Current Position
         |3. Exit Game
         |Enter a choice Number:
