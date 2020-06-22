@@ -33,10 +33,14 @@ class LadderSpec extends UnitSpec {
     assertThrows[IllegalArgumentException] {
       new Ladder(0, 20)
     }
-
     assertThrows[IllegalArgumentException] {
       new Ladder(10, 0)
     }
+  }
+
+  it should " able to create with bonus as ladder and applying should give correct position" in {
+    val ladder = new Ladder(20, 30)
+    assertResult(30)(ladder.applyBonus())
   }
 
 }

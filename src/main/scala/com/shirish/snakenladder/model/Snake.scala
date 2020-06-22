@@ -4,6 +4,7 @@ class Snake (val headPosition: Int, val tailPosition: Int) extends Bonus(headPos
   require(headPosition > tailPosition)
   require(headPosition > 1 && headPosition < 100 && tailPosition > 0 && tailPosition < 100)
 
-  override def goTo(): Unit = {
+  override def applyBonus(): Int = {
+    this.tailPosition
   }
 }

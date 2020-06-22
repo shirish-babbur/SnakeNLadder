@@ -39,4 +39,9 @@ class SnakeSpec extends UnitSpec {
     }
   }
 
+  it should " able to create with bonus as snake and applying should give correct position" in {
+    val snake = new Snake(30, 10)
+    assertResult(10)(snake.applyBonus())
+  }
+
 }
