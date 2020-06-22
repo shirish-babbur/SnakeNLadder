@@ -74,11 +74,20 @@ class Board {
     false
   }
 
+  /***
+   * Current Board size with cells
+   * @return Int
+   */
   def getBoardSize: Int = {
     // remove 0th cell
     this.boardMap.size - 1
   }
 
+  /***
+   * Searches for specified player in current player states
+   * @param playerName: String
+   * @return Boolean
+   */
   def isPlayerPresent(playerName: String): Boolean = {
     if(Utils.isNullOrEmpty(playerName)){
       false
@@ -87,18 +96,19 @@ class Board {
     }
   }
 
-  def removePlayerState(playerName: String): Boolean = {
-    if(!Utils.isNullOrEmpty(playerName) && this.isPlayerPresent(playerName)) {
-      this.playerStates.remove(playerName)
-      true
-    } else false
-  }
-
+  /**
+   * Utility method to reset Everything
+   */
   def clear(): Unit = {
     this.playerStates.clear()
     this.boardMap.clear()
   }
 
+  /***
+   * Utility method to get current Position of player
+   * @param playerName: String
+   * @return Int
+   */
   def getPlayerPosition(playerName: String): Int = {
     Validator.validateNotEmpty(playerName)
     if(this.isPlayerPresent(playerName)){
