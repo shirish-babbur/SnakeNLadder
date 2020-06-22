@@ -9,9 +9,9 @@ class CellSpec extends UnitSpec {
     assert(cell.isInstanceOf[Cell])
   }
 
-  it should " throw exception if cell index is less than 1" in {
+  it should " throw exception if cell index is less than 0" in {
     assertThrows[IllegalArgumentException] {
-      new Cell(0, None)
+      new Cell(-1, None)
     }
   }
 

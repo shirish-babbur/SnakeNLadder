@@ -17,4 +17,8 @@ object Validator {
     }
   }
 
+  def isValidRolledNumber(rolledNumber: Int): Unit = {
+    if(rolledNumber <= 0 || rolledNumber > 6) throw new InvalidInputException("Rolled Number should be between 1 to 6")
+  }
+
 }

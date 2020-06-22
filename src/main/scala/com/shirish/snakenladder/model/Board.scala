@@ -1,7 +1,7 @@
 package com.shirish.snakenladder.model
 
 import com.shirish.snakenladder.utils.ExceptionUtils.PlayerNotFoundException
-import com.shirish.snakenladder.utils.Validator
+import com.shirish.snakenladder.utils.{Utils, Validator}
 import com.shirish.snakenladder.utils.Constants._
 
 import scala.collection.mutable
@@ -19,7 +19,7 @@ class Board {
    * Initialize board with cells and empty Bonuses
    */
   def initialize(): Unit = {
-    for (number <- 1 to 100) {
+    for (number <- 0 to 100) {
       boardMap.put(number, new Cell(number, None))
     }
   }
@@ -31,7 +31,7 @@ class Board {
    */
   def initPlayerState(playerName: String): Boolean = {
     Validator.validateNotEmpty(playerName)
-    if(!playerStates.keySet.contains(playerName)) {
+    if(!this.isPlayerPresent(playerName)) {
       playerStates.put(playerName, boardMap(DEFAULT_START_POSITION))
       true
     } else {
@@ -47,6 +47,7 @@ class Board {
    * @return Int
    */
   def goToCell(playerName: String, rolledNumber: Int): Int = {
+    Validator.isValidRolledNumber(rolledNumber)
     if(playerStates.keySet.contains(playerName)) {
       val currentPosition = playerStates(playerName)
       val nextPosition = currentPosition.getIndex + rolledNumber
@@ -71,6 +72,40 @@ class Board {
 
   def addLadder(ladder: Ladder): Boolean = {
     false
+  }
+
+  def getBoardSize: Int = {
+    // remove 0th cell
+    this.boardMap.size - 1
+  }
+
+  def isPlayerPresent(playerName: String): Boolean = {
+    if(Utils.isNullOrEmpty(playerName)){
+      false
+    } else {
+      this.playerStates.keySet.contains(playerName)
+    }
+  }
+
+  def removePlayerState(playerName: String): Boolean = {
+    if(!Utils.isNullOrEmpty(playerName) && this.isPlayerPresent(playerName)) {
+      this.playerStates.remove(playerName)
+      true
+    } else false
+  }
+
+  def clear(): Unit = {
+    this.playerStates.clear()
+    this.boardMap.clear()
+  }
+
+  def getPlayerPosition(playerName: String): Int = {
+    Validator.validateNotEmpty(playerName)
+    if(this.isPlayerPresent(playerName)){
+      this.playerStates(playerName).getIndex
+    } else {
+      throw new PlayerNotFoundException(s"Player $playerName not Present.")
+    }
   }
 
 }

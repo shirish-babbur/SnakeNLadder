@@ -7,7 +7,7 @@ package com.shirish.snakenladder.model
  * @param bonus: Option[Bonus]
  */
 class Cell(private val indexNumber: Int, val bonus: Option[Bonus]) {
-  require(0 < indexNumber && indexNumber <= 100)
+  require(0 <= indexNumber && indexNumber <= 100)
 
   /***
    * Get index for this cell might be snake bite or
