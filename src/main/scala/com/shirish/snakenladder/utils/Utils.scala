@@ -1,5 +1,7 @@
 package com.shirish.snakenladder.utils
 
+import com.shirish.snakenladder.model.Bonus
+
 /***
  * utility object for helper functions
  */

@@ -16,4 +16,10 @@ object ExceptionUtils {
    * @param msg: String
    */
   class PlayerNotFoundException(msg: String) extends Exception(msg)
+
+  /***
+   * Invalid position of snake being added.
+   * @param msg:String
+   */
+  class InvalidBonusException(msg: String) extends Exception(msg)
 }

@@ -1,11 +1,11 @@
 package com.shirish.snakenladder.model
 
 import com.shirish.snakenladder.UnitSpec
-import com.shirish.snakenladder.utils.ExceptionUtils.InvalidInputException
+import com.shirish.snakenladder.utils.ExceptionUtils.{InvalidBonusException, InvalidInputException}
 
 class BoardSpec extends UnitSpec {
 
-  private var board: Board = new Board
+  private val board: Board = new Board
 
   override def beforeEach() = {
     this.board.initialize()
@@ -72,6 +72,44 @@ class BoardSpec extends UnitSpec {
 
     val updatedPosition = board.goToCell(playerName, rolledNumber)
     assertResult(finalCell)(updatedPosition)
+  }
+
+  it should "a ladder with head 4 and tail 20 should be added successfully" in {
+    val playerName = "Raj"
+    val isAddedFistTime = board.initPlayerState(playerName)
+    assertResult(true)(isAddedFistTime)
+    board.addLadder(new Ladder(4, 20))
+    board.goToCell(playerName, 4)
+    assertResult(20)(board.getPlayerPosition(playerName))
+  }
+
+  it should "a snake with head 5 and tail 3 should be added successfully" in {
+    val playerName = "Raj"
+    val isAddedFistTime = board.initPlayerState(playerName)
+    assertResult(true)(isAddedFistTime)
+    board.addSnake(new Snake(5, 3))
+    board.goToCell(playerName, 5)
+    assertResult(3)(board.getPlayerPosition(playerName))
+  }
+
+  it should "a ladder cannot be added at snake's tail" in {
+    val playerName = "Raj"
+    val isAddedFistTime = board.initPlayerState(playerName)
+    assertResult(true)(isAddedFistTime)
+    board.addSnake(new Snake(5, 3))
+    assertThrows[InvalidBonusException]{
+      board.addLadder(new Ladder(3, 10))
+    }
+  }
+
+  it should "a snake cannot be added at ladder's tail" in {
+    val playerName = "Raj"
+    val isAddedFistTime = board.initPlayerState(playerName)
+    assertResult(true)(isAddedFistTime)
+    board.addLadder(new Ladder(3, 5))
+    assertThrows[InvalidBonusException]{
+      board.addSnake(new Snake(7, 5))
+    }
   }
 
 }

@@ -1,6 +1,6 @@
 package com.shirish.snakenladder.model
 
-import com.shirish.snakenladder.utils.ExceptionUtils.PlayerNotFoundException
+import com.shirish.snakenladder.utils.ExceptionUtils.{InvalidBonusException, PlayerNotFoundException}
 import com.shirish.snakenladder.utils.{Utils, Validator}
 import com.shirish.snakenladder.utils.Constants._
 
@@ -14,6 +14,8 @@ import scala.collection.mutable
 class Board {
   private val boardMap: mutable.HashMap[Int, Cell] = mutable.HashMap[Int, Cell]()
   private val playerStates: mutable.HashMap[String, Cell] = mutable.HashMap[String, Cell]()
+  private val snakes: mutable.Set[Int] = mutable.Set[Int]()
+  private val ladders: mutable.Set[Int] = mutable.Set[Int]()
 
   /***
    * Initialize board with cells and empty Bonuses
@@ -66,12 +68,56 @@ class Board {
     }
   }
 
-  def addSnake(snake: Snake): Boolean = {
-    false
+  /***
+   * Function to add snake with head and tail positions
+   * returns true if added successfully otherwise throws error
+   * @param snake: Bonus
+   * @return Boolean
+   */
+  def addSnake(snake: Bonus): Boolean = {
+    if(canAddBonus(snake)) {
+      val updatedCell = boardMap(snake.head).copy(bonus=Some(snake))
+      boardMap.update(snake.head, updatedCell)
+      snakes.add(snake.head)
+      snakes.add(snake.tail)
+      true
+    } else {
+      throw new InvalidBonusException("Please choose different head and tail positions.")
+    }
   }
 
+  /**
+   * Checks whether Bonus can be added with said
+   * tail and head positions
+   * @param bonus: Bonus
+   * @return Boolean
+   */
+  def canAddBonus(bonus: Bonus): Boolean = {
+    val isHeadFree = isCellFree(bonus.head)
+    val isTailFree = isCellFree(bonus.tail)
+    isHeadFree && isTailFree
+  }
+
+  def isCellFree(cellIndex: Int): Boolean = {
+    !(snakes.contains(cellIndex) || ladders.contains(cellIndex))
+  }
+
+  /***
+   * Function to add ladder with head and tail positions
+   * returns true if added successfully otherwise throws error
+   * @param ladder: Bonus
+   * @return Boolean
+   */
   def addLadder(ladder: Ladder): Boolean = {
-    false
+    if(canAddBonus(ladder)) {
+      val updatedCell = boardMap(ladder.head).copy(bonus=Some(ladder))
+      boardMap.update(ladder.head, updatedCell)
+      ladders.add(ladder.head)
+      ladders.add(ladder.tail)
+      true
+    } else {
+      throw new InvalidBonusException("Please choose different head and tail positions.")
+    }
   }
 
   /***
@@ -102,6 +148,8 @@ class Board {
   def clear(): Unit = {
     this.playerStates.clear()
     this.boardMap.clear()
+    this.snakes.clear()
+    this.ladders.clear()
   }
 
   /***
